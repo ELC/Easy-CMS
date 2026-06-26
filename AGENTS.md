@@ -26,11 +26,15 @@ Do not silently invent new terms. When you hit a gap, a fuzzy term, or a conflic
 
 This rule applies to all natural-language output and to code-level naming (types, functions, variables, files, routes, database tables, event names). Vocabulary drift in code is as harmful as drift in prose.
 
+## Contributor conventions
+
+Follow [`CONTRIBUTING.md`](./CONTRIBUTING.md) for harness, workspace layout, Python HTTP surface, browser surface, testing, generated artifact, and Playwright BDD conventions. If future feedback changes a convention, update `CONTRIBUTING.md` in the same change. If the convention is ambiguous, ask the user before choosing.
+
 ## Harness
 
 Use `mise run check` before declaring implementation complete. While iterating, prefer targeted commands such as `mise run test sync-server-service`, `mise run typecheck studio-service`, or `mise run lint studio-web`; finish with the full gate.
 
-Keep executable orchestration in `mise.toml`, `mise-tasks/`, and `.pre-commit-config.yaml`. Use `prek` for Git hooks, and keep `AGENTS.md` focused on guidance rather than long command lists.
+Keep executable orchestration in `mise.toml` and `.pre-commit-config.yaml`. Use `prek` for Git hooks, and keep `AGENTS.md` focused on guidance rather than long command lists.
 
 ## Mermaid diagrams
 

@@ -10,20 +10,21 @@ from semantic_version import Version
 
 
 ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE_SRC = ROOT / "src"
 
 PYTHON_TO_BROWSER = {
     "studio-service": (
-        ROOT / "apps" / "studio" / "service" / "pyproject.toml",
-        ROOT / "apps" / "studio" / "web" / "package.json",
+        WORKSPACE_SRC / "apps" / "studio" / "service" / "pyproject.toml",
+        WORKSPACE_SRC / "apps" / "studio" / "web" / "package.json",
     ),
     "sync-server-service": (
-        ROOT / "apps" / "sync-server" / "service" / "pyproject.toml",
-        ROOT / "apps" / "sync-server" / "admin" / "package.json",
+        WORKSPACE_SRC / "apps" / "sync-server" / "service" / "pyproject.toml",
+        WORKSPACE_SRC / "apps" / "sync-server" / "admin" / "package.json",
     ),
 }
 
 CALVER_PACKAGES = {
-    "site-template": ROOT / "apps" / "site-template" / "package.json",
+    "site-template": WORKSPACE_SRC / "apps" / "site-template" / "package.json",
 }
 
 PACKAGE_ALIASES = {

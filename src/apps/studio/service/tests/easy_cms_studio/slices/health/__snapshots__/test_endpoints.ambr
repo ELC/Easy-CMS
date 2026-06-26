@@ -1,0 +1,7 @@
+# serializer version: 1
+# name: test_read_health_returns_pydantic_payload[asyncio]
+  dict({
+    'service': 'studio-service',
+    'status': 'healthy',
+  })
+# ---

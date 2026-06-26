@@ -1,0 +1,7 @@
+# serializer version: 1
+# name: test_read_version_returns_installed_package_version[asyncio]
+  dict({
+    'service': 'studio-service',
+    'version': '0.1.0',
+  })
+# ---

@@ -1,0 +1,14 @@
+.platform-admin {
+  display: block;
+  padding: 2rem;
+}
+
+.platform-admin__header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.platform-admin__title {
+  margin: 0;
+}

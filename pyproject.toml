@@ -19,6 +19,7 @@ lint = []
 typecheck = []
 test = []
 coverage = []
+recording = []
 
 [tool.uv]
 package = false
@@ -28,7 +29,7 @@ easy-cms-shared = { workspace = true }
 
 [tool.uv.workspace]
 members = [
-  "apps/studio/service",
-  "apps/sync-server/service",
-  "packages/python-shared",
+  "src/apps/studio/service",
+  "src/apps/sync-server/service",
+  "src/packages/python-shared",
 ]

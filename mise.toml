@@ -1,79 +1,349 @@
 min_version = "2024.12.0"
 
 [tools]
-node = "24"
+node = "24.13.0"
 pnpm = "10.25.0"
-python = "3.13"
-uv = "latest"
+python = "3.13.14"
+uv = "0.9.27"
 
 [tasks.setup]
 description = "Install the full local workspace"
-run = "bash mise-tasks/harness.sh setup"
+run = """
+uv sync --all-groups
+pnpm install
+"""
 
 [tasks."setup:lint"]
 description = "Install lint dependencies"
-run = "bash mise-tasks/harness.sh setup:lint"
+run = """
+uv sync --group lint --group hooks
+pnpm install
+"""
 
 [tasks."setup:typecheck"]
 description = "Install typecheck dependencies"
-run = "bash mise-tasks/harness.sh setup:typecheck"
+run = """
+uv sync --group typecheck --group hooks
+pnpm install
+"""
 
 [tasks."setup:test"]
 description = "Install test dependencies"
-run = "bash mise-tasks/harness.sh setup:test"
+run = """
+uv sync --group test --group coverage --group recording --group hooks
+pnpm install
+"""
 
 [tasks.lint]
 description = "Run lint checks for one package or the workspace"
-run = "bash mise-tasks/harness.sh lint"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name, $task) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "Unknown Python package: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks --group lint poe -C $path $task
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+function Invoke-BrowserTask($name, $task) {
+  pnpm --filter $name $task
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+switch ($package) {
+  "" { "sync-server-service","studio-service","python-shared" | ForEach-Object { Invoke-PythonTask $_ "lint" }; "sync-server-admin","studio-web","site-template","design-system","shared-types" | ForEach-Object { Invoke-BrowserTask $_ "lint" } }
+  { $_ -in "sync-server-service","studio-service","python-shared" } { Invoke-PythonTask $package "lint" }
+  { $_ -in "sync-server-admin","studio-web","site-template","design-system","shared-types" } { Invoke-BrowserTask $package "lint" }
+  default { Write-Error "Unknown package: $package"; exit 2 }
+}
+"""
 
 [tasks.typecheck]
 description = "Run type checks for one package or the workspace"
-run = "bash mise-tasks/harness.sh typecheck"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "Unknown Python package: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks --group typecheck --group test poe -C $path typecheck
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+function Invoke-BrowserTask($name) {
+  pnpm --filter $name typecheck
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+switch ($package) {
+  "" { "sync-server-service","studio-service","python-shared" | ForEach-Object { Invoke-PythonTask $_ }; "sync-server-admin","studio-web","site-template","design-system","shared-types" | ForEach-Object { Invoke-BrowserTask $_ } }
+  { $_ -in "sync-server-service","studio-service","python-shared" } { Invoke-PythonTask $package }
+  { $_ -in "sync-server-admin","studio-web","site-template","design-system","shared-types" } { Invoke-BrowserTask $package }
+  default { Write-Error "Unknown package: $package"; exit 2 }
+}
+"""
 
 [tasks.test]
 description = "Run tests for one package or the workspace"
-run = "bash mise-tasks/harness.sh test"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "Unknown Python package: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks --group test poe -C $path test
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+function Invoke-BrowserTask($name) {
+  pnpm --filter $name test
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+switch ($package) {
+  "" { "sync-server-service","studio-service","python-shared" | ForEach-Object { Invoke-PythonTask $_ }; "sync-server-admin","studio-web","site-template","design-system","shared-types" | ForEach-Object { Invoke-BrowserTask $_ } }
+  { $_ -in "sync-server-service","studio-service","python-shared" } { Invoke-PythonTask $package }
+  { $_ -in "sync-server-admin","studio-web","site-template","design-system","shared-types" } { Invoke-BrowserTask $package }
+  default { Write-Error "Unknown package: $package"; exit 2 }
+}
+"""
 
 [tasks.coverage]
 description = "Run Python coverage for one package or all Python packages"
-run = "bash mise-tasks/harness.sh coverage"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "Coverage only supports Python packages: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks --group test --group coverage poe -C $path coverage
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+if ($package -eq "") {
+  "sync-server-service","studio-service","python-shared" | ForEach-Object { Invoke-PythonTask $_ }
+} else {
+  Invoke-PythonTask $package
+}
+"""
 
 [tasks.openapi]
 description = "Regenerate checked-in OpenAPI artifacts"
-run = "bash mise-tasks/harness.sh openapi"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "OpenAPI only supports Python packages: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks poe -C $path openapi
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+if ($package -eq "") {
+  "sync-server-service","studio-service" | ForEach-Object { Invoke-PythonTask $_ }
+} else {
+  Invoke-PythonTask $package
+}
+"""
 
 [tasks.orval]
 description = "Regenerate checked-in Orval artifacts"
-run = "bash mise-tasks/harness.sh orval"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-BrowserTask($name) {
+  if ($name -notin "sync-server-admin","studio-web","site-template","design-system","shared-types") {
+    Write-Error "Orval only supports browser packages: $name"
+    exit 2
+  }
+  pnpm --filter $name orval
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+pnpm install
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($package -eq "") {
+  "sync-server-admin","studio-web" | ForEach-Object { Invoke-BrowserTask $_ }
+} else {
+  Invoke-BrowserTask $package
+}
+"""
 
 [tasks."generated-check"]
 description = "Verify generated artifacts are current"
-run = "bash mise-tasks/harness.sh generated-check"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+switch ($package) {
+  "" {
+    mise run openapi
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    mise run orval
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  }
+  "sync-server-service" {
+    mise run openapi sync-server-service
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    mise run orval sync-server-admin
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  }
+  "studio-service" {
+    mise run openapi studio-service
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    mise run orval studio-web
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  }
+  "sync-server-admin" {
+    mise run openapi sync-server-service
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    mise run orval sync-server-admin
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  }
+  "studio-web" {
+    mise run openapi studio-service
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    mise run orval studio-web
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  }
+  "python-shared" {}
+  "site-template" {}
+  "design-system" {}
+  "shared-types" {}
+  default { Write-Error "Unknown package: $package"; exit 2 }
+}
+git diff --exit-code -- src/apps src/packages
+"""
 
 [tasks."har:record"]
 description = "Record Playwright HAR fixtures"
-run = "bash mise-tasks/harness.sh har:record"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+pnpm install
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+$packages = if ($package -eq "") { @("sync-server-admin", "studio-web", "site-template") } else { @($package) }
+foreach ($name in $packages) {
+  pnpm --filter $name test:record
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+"""
 
 [tasks."har:test"]
 description = "Run Playwright tests with committed HAR fixtures"
-run = "bash mise-tasks/harness.sh har:test"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+pnpm install
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+$packages = if ($package -eq "") { @("sync-server-admin", "studio-web", "site-template") } else { @($package) }
+foreach ($name in $packages) {
+  pnpm --filter $name test
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+"""
 
 [tasks.docs]
 description = "Validate documentation diagrams"
-run = "bash mise-tasks/harness.sh docs"
+run = "npx -y @probelabs/maid docs/"
 
 [tasks."version-check"]
 description = "Validate package version contracts"
-run = "bash mise-tasks/harness.sh version-check"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+uv run python scripts/version_check.py $package
+"""
 
 [tasks.check]
 description = "Run the full local Windows-first harness"
-run = "bash mise-tasks/harness.sh check"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+mise run lint $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run typecheck $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run test $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+if ($package -eq "" -or $package -in "sync-server-service","studio-service","python-shared") {
+  mise run coverage $package
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+mise run generated-check $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run version-check $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run docs
+"""
 
 [tasks."check:ci"]
 description = "Run the Linux CI/CD subset"
-run = "bash mise-tasks/harness.sh check:ci"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+mise run lint $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run typecheck $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run test $package
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+mise run version-check $package
+"""
 
 [tasks.build]
 description = "Build one package or every buildable surface"
-run = "bash mise-tasks/harness.sh build"
+shell = "powershell"
+usage = 'arg "[package]" default=""'
+run = """
+$package = $env:usage_package
+function Invoke-PythonTask($name) {
+  $path = switch ($name) {
+    "sync-server-service" { "src/apps/sync-server/service" }
+    "studio-service" { "src/apps/studio/service" }
+    "python-shared" { "src/packages/python-shared" }
+    default { Write-Error "Unknown Python package: $name"; exit 2 }
+  }
+  $uvPackage = if ($name -eq "python-shared") { "easy-cms-shared" } else { $name }
+  uv run --package $uvPackage --group hooks poe -C $path build
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+function Invoke-BrowserTask($name) {
+  pnpm --filter $name build
+  if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+switch ($package) {
+  "" { "sync-server-service","studio-service","python-shared" | ForEach-Object { Invoke-PythonTask $_ }; "sync-server-admin","studio-web","site-template","design-system","shared-types" | ForEach-Object { Invoke-BrowserTask $_ } }
+  { $_ -in "sync-server-service","studio-service","python-shared" } { Invoke-PythonTask $package }
+  { $_ -in "sync-server-admin","studio-web","site-template","design-system","shared-types" } { Invoke-BrowserTask $package }
+  default { Write-Error "Unknown package: $package"; exit 2 }
+}
+"""

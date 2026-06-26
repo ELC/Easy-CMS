@@ -1,0 +1,32 @@
+{
+  "name": "site-template",
+  "version": "2026.06.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "node --max-old-space-size=4096 --max-semi-space-size=256 ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "bddgen && playwright test",
+    "test:record": "bddgen && playwright test",
+    "build": "node --max-old-space-size=4096 --max-semi-space-size=256 ./node_modules/typescript/bin/tsc --noEmit && vite build",
+    "orval": "node -e \"console.log('site-template has no Orval output')\""
+  },
+  "dependencies": {
+    "design-system": "workspace:*",
+    "react": "19",
+    "react-dom": "19",
+    "ts-pattern": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@vitejs/plugin-react": "*",
+    "cross-env": "*",
+    "playwright-bdd": "*",
+    "sass": "*",
+    "typescript": "*",
+    "vite": "*"
+  }
+}

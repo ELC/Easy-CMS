@@ -1,0 +1,13 @@
+.version-badge {
+  display: inline-flex;
+  gap: 0.375rem;
+  align-items: baseline;
+}
+
+.version-badge__label {
+  font-weight: 600;
+}
+
+.version-badge__value {
+  font-variant-numeric: tabular-nums;
+}

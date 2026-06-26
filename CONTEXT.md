@@ -18,6 +18,10 @@ _Avoid_: client, frontend, app
 The public read-only static site produced from one Site's content, hosted on GitHub Pages.
 _Avoid_: published site, frontend, public app
 
+**Web View**:
+A deterministic visible state inside a browser surface. Playwright Page Object Models are scoped to one Web View and transition to another Web View only through explicit user behavior.
+_Avoid_: screen, page, POM page, route component
+
 ### Tenancy
 
 **Site**:
