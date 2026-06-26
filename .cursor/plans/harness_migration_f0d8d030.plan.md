@@ -4,22 +4,22 @@ overview: Apply the quality harness patterns from `probabilidad` to Easy CMS whi
 todos:
   - id: root-harness
     content: Add root workspace harness files for uv, mise, prek, pnpm, and Python 3.13.
-    status: pending
+    status: completed
   - id: python-members
     content: Create typed FastAPI Python workspace members with version and health endpoints plus no-mock tests.
-    status: pending
+    status: completed
   - id: browser-members
     content: Create pnpm browser-surface skeletons with version badges and strict TypeScript checks.
-    status: pending
+    status: completed
   - id: version-contract
     content: Add version alignment checks for semantic-version pairs and Generated Site CalVer.
-    status: pending
+    status: completed
   - id: agent-guidance
     content: Update AGENTS.md with concise harness instructions pointing to mise and prek.
-    status: pending
+    status: completed
   - id: validate-harness
     content: Run and document the full harness validation commands.
-    status: pending
+    status: in_progress
 isProject: false
 ---
 

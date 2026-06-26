@@ -1,0 +1,123 @@
+[project]
+name = "easy-cms-shared"
+version = "0.1.0"
+description = "Shared Easy CMS Python contracts"
+requires-python = ">=3.13"
+dependencies = [
+  "pydantic>=2.0",
+]
+
+[build-system]
+requires = ["setuptools>=80"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+easy_cms_shared = ["py.typed"]
+
+[dependency-groups]
+lint = [
+  "pylint>=4.0",
+  "ruff>=0.15.15",
+]
+typecheck = [
+  "mypy>=2.1",
+  "pyright>=1.1.407",
+]
+test = [
+  "anyio>=4.12",
+  "pytest>=8.3",
+]
+coverage = [
+  "pytest-cov>=7.0",
+]
+version = [
+  "semantic-version>=2.10",
+]
+hooks = [
+  "poethepoet>=0.37",
+]
+
+[tool.poe.tasks]
+lint = "ruff check --exit-non-zero-on-fix src tests"
+test = "pytest"
+coverage = "pytest --cov --cov-report=term-missing --cov-report=xml"
+openapi = "python -c \"print('python-shared has no OpenAPI artifact')\""
+generated-check = "python -c \"print('python-shared has no generated artifacts')\""
+build = "python -m py_compile src/easy_cms_shared/__init__.py src/easy_cms_shared/contracts.py"
+typecheck-mypy = "mypy src tests"
+typecheck-pyright = "pyright src tests"
+
+[tool.poe.tasks.typecheck]
+sequence = [
+  "typecheck-mypy",
+  "typecheck-pyright",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["-vv"]
+
+[tool.coverage.run]
+branch = true
+source = [
+  "src/easy_cms_shared",
+  "tests",
+]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+skip_covered = true
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "@(abc\\.)?abstractmethod",
+  "^\\s*\\.\\.\\.$",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.13"
+mypy_path = "src"
+explicit_package_bases = true
+
+[tool.pyright]
+pythonVersion = "3.13"
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+reportMissingTypeStubs = "none"
+reportUnusedFunction = "none"
+
+[tool.ruff]
+fix = true
+preview = true
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["ALL"]
+ignore = [
+  "CPY",
+  "D",
+  "S101",
+  "COM812",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pylint.messages_control]
+disable = [
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "missing-module-docstring",
+  "too-few-public-methods",
+]

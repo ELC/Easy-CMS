@@ -1,0 +1,79 @@
+min_version = "2024.12.0"
+
+[tools]
+node = "24"
+pnpm = "10.25.0"
+python = "3.13"
+uv = "latest"
+
+[tasks.setup]
+description = "Install the full local workspace"
+run = "bash mise-tasks/harness.sh setup"
+
+[tasks."setup:lint"]
+description = "Install lint dependencies"
+run = "bash mise-tasks/harness.sh setup:lint"
+
+[tasks."setup:typecheck"]
+description = "Install typecheck dependencies"
+run = "bash mise-tasks/harness.sh setup:typecheck"
+
+[tasks."setup:test"]
+description = "Install test dependencies"
+run = "bash mise-tasks/harness.sh setup:test"
+
+[tasks.lint]
+description = "Run lint checks for one package or the workspace"
+run = "bash mise-tasks/harness.sh lint"
+
+[tasks.typecheck]
+description = "Run type checks for one package or the workspace"
+run = "bash mise-tasks/harness.sh typecheck"
+
+[tasks.test]
+description = "Run tests for one package or the workspace"
+run = "bash mise-tasks/harness.sh test"
+
+[tasks.coverage]
+description = "Run Python coverage for one package or all Python packages"
+run = "bash mise-tasks/harness.sh coverage"
+
+[tasks.openapi]
+description = "Regenerate checked-in OpenAPI artifacts"
+run = "bash mise-tasks/harness.sh openapi"
+
+[tasks.orval]
+description = "Regenerate checked-in Orval artifacts"
+run = "bash mise-tasks/harness.sh orval"
+
+[tasks."generated-check"]
+description = "Verify generated artifacts are current"
+run = "bash mise-tasks/harness.sh generated-check"
+
+[tasks."har:record"]
+description = "Record Playwright HAR fixtures"
+run = "bash mise-tasks/harness.sh har:record"
+
+[tasks."har:test"]
+description = "Run Playwright tests with committed HAR fixtures"
+run = "bash mise-tasks/harness.sh har:test"
+
+[tasks.docs]
+description = "Validate documentation diagrams"
+run = "bash mise-tasks/harness.sh docs"
+
+[tasks."version-check"]
+description = "Validate package version contracts"
+run = "bash mise-tasks/harness.sh version-check"
+
+[tasks.check]
+description = "Run the full local Windows-first harness"
+run = "bash mise-tasks/harness.sh check"
+
+[tasks."check:ci"]
+description = "Run the Linux CI/CD subset"
+run = "bash mise-tasks/harness.sh check:ci"
+
+[tasks.build]
+description = "Build one package or every buildable surface"
+run = "bash mise-tasks/harness.sh build"

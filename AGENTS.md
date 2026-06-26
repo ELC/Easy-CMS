@@ -26,6 +26,12 @@ Do not silently invent new terms. When you hit a gap, a fuzzy term, or a conflic
 
 This rule applies to all natural-language output and to code-level naming (types, functions, variables, files, routes, database tables, event names). Vocabulary drift in code is as harmful as drift in prose.
 
+## Harness
+
+Use `mise run check` before declaring implementation complete. While iterating, prefer targeted commands such as `mise run test sync-server-service`, `mise run typecheck studio-service`, or `mise run lint studio-web`; finish with the full gate.
+
+Keep executable orchestration in `mise.toml`, `mise-tasks/`, and `.pre-commit-config.yaml`. Use `prek` for Git hooks, and keep `AGENTS.md` focused on guidance rather than long command lists.
+
 ## Mermaid diagrams
 
 Every Mermaid diagram authored or edited in this repository (anywhere — `docs/`, ADRs, READMEs, the development plan, inline in chat-produced files) MUST be validated with [`maid`](https://github.com/probelabs/maid) before you consider the change done.

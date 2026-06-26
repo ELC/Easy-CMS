@@ -1,0 +1,34 @@
+[project]
+name = "easy-cms-workspace"
+version = "0.1.0"
+description = "Easy CMS workspace harness"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[dependency-groups]
+hooks = [
+  "poethepoet>=0.37",
+  "prek>=0.4",
+]
+docs = []
+version = [
+  "semantic-version>=2.10",
+]
+lint = []
+typecheck = []
+test = []
+coverage = []
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+easy-cms-shared = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+  "apps/studio/service",
+  "apps/sync-server/service",
+  "packages/python-shared",
+]

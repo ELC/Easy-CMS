@@ -1,0 +1,33 @@
+{
+  "name": "studio-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test",
+    "test:record": "cross-env PLAYWRIGHT_UPDATE_HAR=1 playwright test",
+    "build": "tsc --noEmit && vite build",
+    "orval": "orval --config orval.config.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "*",
+    "axios": "*",
+    "design-system": "workspace:*",
+    "react": "*",
+    "react-dom": "*",
+    "shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@vitejs/plugin-react": "*",
+    "cross-env": "*",
+    "orval": "*",
+    "typescript": "*",
+    "vite": "*"
+  }
+}

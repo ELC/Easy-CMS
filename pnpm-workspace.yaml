@@ -1,0 +1,6 @@
+packages:
+  - "apps/studio/web"
+  - "apps/sync-server/admin"
+  - "apps/site-template"
+  - "packages/design-system"
+  - "packages/shared-types"

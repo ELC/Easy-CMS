@@ -1,0 +1,28 @@
+{
+  "name": "site-template",
+  "version": "2026.06.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "playwright test",
+    "test:record": "playwright test",
+    "build": "tsc --noEmit && vite build",
+    "orval": "node -e \"console.log('site-template has no Orval output')\""
+  },
+  "dependencies": {
+    "design-system": "workspace:*",
+    "react": "*",
+    "react-dom": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@vitejs/plugin-react": "*",
+    "typescript": "*",
+    "vite": "*"
+  }
+}
